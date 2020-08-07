@@ -1,45 +1,56 @@
 
+"""
+https://atcoder.jp/contests/abc173/tasks/abc173_e
+
+長さNの数列{A_i}の中からK個の要素を選ぶ時，その積の最大値を求める．
+
+全ての要素が負の場合には，絶対値を小さくするように選ぶ．
+
+全ての要素を選ぶ時(K==N)，全てを選ぶ．
+
+それ以外の時には，要素の積は非負となるので，絶対値を大きくするように選ぶ．
+pos, negから，2個ずつの積を取り出し，大きい方からK//2個を採択する．
+ここで，pos, negにそれぞれ最大1個の要素が残り得るが，K<Nなので問題ない．
+"""
+
 N, K = map(int, input().split())
 X = list(map(int, input().split()))
+
 MOD = 10 ** 9 + 7
 
-pos = sorted(v for v in X if v >= 0)
-neg = sorted(-v for v in X if v < 0)
-
-ok = False  # True: ans>=0, False: ans<0
-if pos:
-    if N == K:
-        # Select all -> number of negatives must be even
-        ok = len(neg) % 2 == 0
-    else:
-        ok = True
+if K % 2 == 1 and all(v < 0 for v in X):
+    # Minimize abs
+    X.sort(key=lambda x: -x)
+    ans = 1
+    for i in range(K):
+        ans = ans * X[i] % MOD
+    print(ans)
+elif K == N:
+    # Select all
+    ans = 1
+    for i in range(K):
+        ans = ans * X[i] % MOD
+    print(ans)
 else:
-    # All negative and even number is selected
-    ok = K % 2 == 0
+    # Select K elements to maximize their product
+    pos = sorted(v for v in X if v >= 0)
+    neg = sorted(-v for v in X if v < 0)
 
-ans = 1
-if ok:
-    # ans >= 0
+    ans = 1
     if K % 2 == 1:
-        ans = ans * pos.pop() % MOD
+        ans *= pos.pop()
 
-    # 答えは正になる→二つの数の積は必ず正になる．
     cand = []
     while len(pos) >= 2:
-        x = pos.pop() * pos.pop()
-        cand.append(x)
+        tmp = pos.pop() * pos.pop()
+        cand.append(tmp)
 
     while len(neg) >= 2:
-        x = neg.pop() * neg.pop()
-        cand.append(x)
+        tmp = neg.pop() * neg.pop()
+        cand.append(tmp)
 
     cand.sort(reverse=True)
     for i in range(K // 2):
         ans = ans * cand[i] % MOD
-else:
-    # ans <= 0
-    cand = sorted(X, key=lambda x: abs(x))
-    for i in range(K):
-        ans = ans * cand[i] % MOD
 
-print(ans)
+    print(ans)
