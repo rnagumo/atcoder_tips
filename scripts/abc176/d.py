@@ -1,4 +1,32 @@
 
+"""
+https://atcoder.jp/contests/abc176/tasks/abc176_d
+
+移動コストが0/1の場合には，01-BFSという実装が可能となる．コストが0の移動先はdequeの先頭に，
+コストが1の移動先はdequeの末尾に追加することで，距離順の探索が可能となる．
+
+```
+q = deque()
+q.append((C_h - 1, C_w - 1))
+while q:
+    u, v = q.popleft()
+    for i, j in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+        if (0 <= u + i < H and 0 <= v + j < W
+                and X[u + i][v + j] == "."
+                and dist[u + i][v + j] > dist[u][v]):
+            dist[u + i][v + j] = dist[u][v]
+            q.appendleft((u + i, v + j))
+
+    for i in range(-2, 3):
+        for j in range(-2, 3):
+            if (0 <= u + i < H and 0 <= v + j < W
+                    and X[u + i][v + j] == "."
+                    and dist[u + i][v + j] > dist[u][v] + 1):
+                dist[u + i][v + j] = dist[u][v] + 1
+                q.append((u + i, v + j))
+```
+"""
+
 from collections import deque
 
 H, W = map(int, input().split())
